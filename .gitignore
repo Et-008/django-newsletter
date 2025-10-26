@@ -1,0 +1,43 @@
+# Python
+*.pyc
+*.pyo
+__pycache__/
+
+# Virtual Environment
+.venv/
+env/
+venv/
+ENV/
+
+# Django specific
+*.sqlite3
+db.sqlite3
+/media/
+/staticfiles/
+/static/
+
+# VS Code
+.vscode/
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Env files
+*.env
+.env.*
+
+# Migrations
+**/migrations/
+
+# Pytest cache
+.pytest_cache/
+
+# Coverage reports
+htmlcov/
+.coverage
+.coverage.*
+
+# Logs
+*.log
+

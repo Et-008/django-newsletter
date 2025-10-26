@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Subscribe</title>
+  </head>
+  <body>
+    <h2>Subscribe to our Newsletter</h2>
+    <form method="POST">
+      {% csrf_token %}
+      <label>Email:</label><br />
+      <input type="email" name="email" required /><br /><br />
+      <label>Name:</label><br />
+      <input type="text" name="name" /><br /><br />
+      <button type="submit">Subscribe</button>
+    </form>
+  </body>
+</html>
