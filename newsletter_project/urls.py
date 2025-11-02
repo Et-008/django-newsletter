@@ -19,6 +19,7 @@ from django.urls import path, include
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("", include("newsletter.urls")),
+    path('api/', include('newsletter.urls')), # Include your app's URLs under a base path
+    # path("", include("newsletter.urls")),
 ]
 

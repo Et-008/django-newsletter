@@ -25,7 +25,15 @@ SECRET_KEY = 'django-insecure--rqp*!%oho!4yv^x_xkj%5u0ky+moq!_q(v7!pq#pa$0^smg6+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    "localhost",
+    "127.0.0.1",
+    "0c957148575d.ngrok-free.app",
+    "lang-q.com",
+    "www.lang-q.com",
+    "arunet007.pythonanywhere.com",
+    "www.arunet007.pythonanywhere.com",
+]
 
 
 # Application definition
@@ -37,10 +45,13 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
+    'corsheaders',
     'newsletter',
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -48,6 +59,64 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+]
+
+    
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",
+    "http://localhost:3001",
+    "http://127.0.0.1:3000",
+    "http://127.0.0.1:3001",
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+    "https://lang-q.com",
+    "https://www.lang-q.com",
+    "https://0c957148575d.ngrok-free.app",
+    "https://arunet007.pythonanywhere.com",
+    "https://www.arunet007.pythonanywhere.com",
+]
+
+CORS_ALLOW_METHODS = [
+    'DELETE',
+    'GET',
+    'OPTIONS',
+    'PATCH',
+    'POST',
+    'PUT',
+]
+
+CORS_ALLOW_HEADERS = [
+    'accept',
+    'accept-encoding',
+    'authorization',
+    'content-type',
+    'dnt',
+    'origin',
+    'user-agent',
+    'x-csrftoken',
+    'x-requested-with',
+]
+
+CORS_ALLOW_CREDENTIALS = True
+
+CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SAMESITE = 'None'
+SESSION_COOKIE_SAMESITE = 'None'
+
+
+CSRF_TRUSTED_ORIGINS = [
+    "http://localhost:3000",
+    "http://localhost:3001",
+    "http://127.0.0.1:3000",
+    "http://127.0.0.1:3001",
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+    "https://lang-q.com",
+    "https://www.lang-q.com",
+    "https://0c957148575d.ngrok-free.app",
+    "https://arunet007.pythonanywhere.com",
+    "https://www.arunet007.pythonanywhere.com",
 ]
 
 ROOT_URLCONF = 'newsletter_project.urls'
@@ -124,9 +193,13 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-EMAIL_HOST = "smtp.gmail.com"
+EMAIL_HOST = "smtp.zoho.in"
 EMAIL_PORT = 587
-EMAIL_HOST_USER = "arunet007@gmail.com"
-EMAIL_HOST_PASSWORD = "mywx xhed stsh dpxx"
+# EMAIL_HOST_USER = "arunet007@gmail.com"
+# EMAIL_HOST_USER = "arun@lang-q.com"
+EMAIL_HOST_USER = "team@lang-q.com"
+# EMAIL_HOST_PASSWORD = "mywx xhed stsh dpxx"
+# EMAIL_HOST_PASSWORD = "UbkjeEbcAkRV"
+EMAIL_HOST_PASSWORD = "PHrT2NqBFwy1"
 EMAIL_USE_TLS = True
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER

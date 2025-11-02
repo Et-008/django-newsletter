@@ -1,0 +1,6 @@
+ Django==4.2.25
+ # Django REST Framework for API endpoints
+ djangorestframework>=3.14,<4
+ # CORS headers support
+ django-cors-headers>=4,<5
+
