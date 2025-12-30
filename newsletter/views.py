@@ -11,7 +11,6 @@ from django.views.decorators.http import require_POST
 from django.views.decorators.csrf import csrf_exempt
 # import requests
 # from bs4 import BeautifulSoup
-from playwright.sync_api import sync_playwright
 # from markdownify import markdownify as md
 from .models import UrlData
 
@@ -49,6 +48,7 @@ def get_csrf_token(request):
 @require_POST
 def html_to_image(request):
     # Get URL from POST data (json or form)
+    from playwright.sync_api import sync_playwright
     if request.content_type and "application/json" in request.content_type:
         try:
             data = json.loads(request.body.decode("utf-8"))
