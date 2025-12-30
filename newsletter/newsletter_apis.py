@@ -19,8 +19,6 @@ from .crypto_utils import decrypt_secret
 from google import genai
 import os
 
-# login(token = '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')
-
 # 2. Define the JSON Schema for the Newsletter
 class NewsletterSection(BaseModel):
     """A section of the newsletter."""
