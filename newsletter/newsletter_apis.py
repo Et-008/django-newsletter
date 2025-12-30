@@ -264,7 +264,7 @@ def send_newsletter_email(request):
         html = data.get("html")
         subscribers = data.get("subscribers")
         newsletter_id = data.get("newsletter_id")
-        print(newsletter_id, "newsletter_id")
+        email_config_id = data.get("email_config_id")
 
         if title and html and len(subscribers) > 0:
             # Resolve user-specific email backend if available
@@ -272,7 +272,10 @@ def send_newsletter_email(request):
             from_email = settings.DEFAULT_FROM_EMAIL
             try:
                 if request.user and request.user.is_authenticated:
-                    config = EmailConfig.objects.filter(user=request.user, is_active=True).order_by("-is_primary", "-updated_at").first()
+                    if email_config_id:
+                        config = EmailConfig.objects.get(id=email_config_id)
+                    else:
+                        config = EmailConfig.objects.filter(user=request.user, is_active=True).order_by("-is_primary", "-updated_at").first()
                     if config:
                         password = decrypt_secret(config.password_encrypted) if config.password_encrypted else ""
                         connection = get_connection(
@@ -288,6 +291,9 @@ def send_newsletter_email(request):
                         from_email = config.from_email or from_email
             except Exception:
                 connection = None  # fallback to default
+
+            if not connection:
+                return JsonResponse({"Developer": "Arun Et", "message": "Failed to establish connection"}, status=500)
 
             for s in subscribers:
                 print(s['email'], "s.email")

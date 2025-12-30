@@ -69,12 +69,16 @@ def html_to_image(request):
             # return HttpResponse(open(url_data.image.path, "rb").read(), content_type="image/png")
 
     try:
+        # Ensure the url_images directory exists
+        url_images_dir = os.path.join(settings.MEDIA_ROOT, "url_images")
+        os.makedirs(url_images_dir, exist_ok=True)
+        
         with sync_playwright() as playwright:
             browser = playwright.chromium.launch(headless=True)
             page = browser.new_page()
             request_data = json.loads(request.body.decode("utf-8"))
             page.goto(request_data.get("url") or request.POST.get("url"))
-            page.screenshot(path=f"/media/url_images/{cleaned_url}.png", full_page=False)
+            page.screenshot(path=os.path.join(url_images_dir, f"{cleaned_url}.png"), full_page=False)
             browser.close()
     except Exception as e:
         return JsonResponse({"detail": f"Failed to convert HTML to image: {e}"}, status=500)
@@ -83,12 +87,12 @@ def html_to_image(request):
     try:
         # Make sure the file path matches where you saved the screenshot
 
-        with open(f"/media/url_images/{cleaned_url}.png", "rb") as img_file:
+        with open(os.path.join(settings.MEDIA_ROOT, "url_images", f"{cleaned_url}.png"), "rb") as img_file:
             # Remove old UrlData for this URL if exists (optional: not required unless you want single record per url)
             # UrlData.objects.filter(url=url).delete()
 
             url_data, created = UrlData.objects.update_or_create(url=url)
-            url_data.image.save(f"/media/url_images/{cleaned_url}.png", img_file, save=True)
+            url_data.image.save(f"{cleaned_url}.png", img_file, save=True)
             url_data.save()
     except Exception as save_exc:
         # Ignore db errors, but in production you might want to log this

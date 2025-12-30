@@ -165,12 +165,49 @@ def subscribe(request):
             return JsonResponse({"detail": "Invalid JSON"}, status=400)
         email = data.get("email")
         name = data.get("name", "")
+        accountId = data.get("accountId")
     else:
         email = request.POST.get("email")
         name = request.POST.get("name", "")
-
+        accountId = request.POST.get("accountId")
     if not email:
         return JsonResponse({"detail": "email is required"}, status=400)
 
-    Subscriber.objects.get_or_create(email=email, defaults={"name": name})
-    return JsonResponse({"message": "Subscriber created successfully", "data": {"email": email, "name": name}}, status=201)
+    Subscriber.objects.get_or_create(accountId=accountId, email=email, defaults={"name": name})
+    return JsonResponse({"Developer": "Arun Et", "message": "Subscriber created successfully", "data": {"email": email, "name": name}}, status=201)
+
+
+@require_POST
+def update_subscriber(request):
+    if request.content_type and "application/json" in request.content_type:
+        try:
+            data = json.loads(request.body.decode("utf-8"))
+        except Exception:
+            return JsonResponse({"detail": "Invalid JSON"}, status=400)
+        email = data.get("email")
+        name = data.get("name")
+        subscriber_id = data.get("subscriber_id")
+    if not subscriber_id:
+        return JsonResponse({"detail": "subscriber_id is required"}, status=400)
+
+    Subscriber.objects.filter(id=subscriber_id).update(name=name, email=email)
+    return JsonResponse({"Developer": "Arun Et", "message": "Subscriber updated successfully"}, status=200)
+
+
+@require_POST
+def unsubscribe(request):
+    if request.content_type and "application/json" in request.content_type:
+        try:
+            data = json.loads(request.body.decode("utf-8"))
+        except Exception:
+            return JsonResponse({"detail": "Invalid JSON"}, status=400)
+        subscriber_id = data.get("subscriber_id")
+        activeStatus = data.get("activeStatus")
+    else:
+        subscriber_id = request.POST.get("subscriber_id")
+        activeStatus = request.POST.get("activeStatus")
+    if not subscriber_id or activeStatus not in [True, False]:
+        return JsonResponse({"Developer": "Arun Et", "detail": "subscriber_id and activeStatus are required"}, status=400)
+
+    Subscriber.objects.filter(id=subscriber_id).update(is_active=activeStatus)
+    return JsonResponse({"Developer": "Arun Et", "message": "Subscriber status updated successfully"}, status=200)

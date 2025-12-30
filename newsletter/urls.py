@@ -12,6 +12,8 @@ from django.conf.urls.static import static
 urlpatterns = [
     path("get-csrf-token/", views.get_csrf_token, name="get_csrf_token"),
     path("subscribe/", auth_views.subscribe, name="subscribe"),
+    path("update-subscriber/", auth_views.update_subscriber, name="update_subscriber"),
+    path("unsubscribe/", auth_views.unsubscribe, name="unsubscribe"),
     path("send/<int:campaign_id>/", views.send_newsletter, name="send_newsletter"),
     path("html-to-image/", views.html_to_image, name="html_to_image"),
     path("fetch-html-and-convert-to-json/", newsletter_apis.fetch_html_and_convert_to_json, name="fetch_html_and_convert_to_json"),
