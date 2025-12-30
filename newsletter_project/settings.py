@@ -11,7 +11,6 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 from pathlib import Path
-import os
 import environ
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -19,20 +18,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 env = environ.Env(DEBUG=(bool, True))
 
-# Determine which environment file to load based on DJANGO_ENV
-# Options: 'development', 'production'
-# Defaults to 'development' if not set
-DJANGO_ENV = os.getenv('DJANGO_ENV', 'development')
+# Reads .env locally, ignored in Render
+environ.Env.read_env(BASE_DIR / ".env")
 
 # Load environment-specific .env file
-env_file = os.path.join(BASE_DIR, f".env.{DJANGO_ENV}")
-if os.path.exists(env_file):
-    environ.Env.read_env(env_file)
-else:
-    # Fallback to .env if environment-specific file doesn't exist
-    fallback_env = os.path.join(BASE_DIR, ".env")
-    if os.path.exists(fallback_env):
-        environ.Env.read_env(fallback_env)
+# env_file = os.path.join(BASE_DIR, ".env")
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
