@@ -1,10 +1,22 @@
- Django==4.2.25
- # Django REST Framework for API endpoints
- djangorestframework>=3.14,<4
- # CORS headers support
- django-cors-headers>=4,<5
+Django==4.2.25
+# Django REST Framework for API endpoints
+djangorestframework>=3.14,<4
+# CORS headers support
+django-cors-headers>=4,<5
 python-dotenv>=1.0,<2
 cryptography>=43,<44
 django-environ>=0.11,<1
 gunicorn>=21.2,<22
 psycopg[binary]
+# HTTP requests library
+requests>=2.31,<3
+# HTML parsing
+beautifulsoup4>=4.12,<5
+# HTML to Markdown conversion
+markdownify>=0.11,<1
+# Data validation
+pydantic>=2.0,<3
+# Google Gemini AI API
+google-genai>=1.0,<2
+# Image processing for ImageField
+Pillow>=10.0,<11
