@@ -11,29 +11,39 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 from pathlib import Path
+import os
+import environ
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+env = environ.Env(DEBUG=(bool, True))
+
+# Determine which environment file to load based on DJANGO_ENV
+# Options: 'development', 'production'
+# Defaults to 'development' if not set
+DJANGO_ENV = os.getenv('DJANGO_ENV', 'development')
+
+# Load environment-specific .env file
+env_file = os.path.join(BASE_DIR, f".env.{DJANGO_ENV}")
+if os.path.exists(env_file):
+    environ.Env.read_env(env_file)
+else:
+    # Fallback to .env if environment-specific file doesn't exist
+    fallback_env = os.path.join(BASE_DIR, ".env")
+    if os.path.exists(fallback_env):
+        environ.Env.read_env(fallback_env)
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure--rqp*!%oho!4yv^x_xkj%5u0ky+moq!_q(v7!pq#pa$0^smg6+'
+SECRET_KEY = env('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = env('DEBUG')
 
-ALLOWED_HOSTS = [
-    "localhost",
-    "127.0.0.1",
-    "0c957148575d.ngrok-free.app",
-    "lang-q.com",
-    "www.lang-q.com",
-    "arunet007.pythonanywhere.com",
-    "www.arunet007.pythonanywhere.com",
-]
+ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=[])
 
 
 # Application definition
@@ -69,11 +79,13 @@ CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:3001",
     "http://localhost:5173",
     "http://127.0.0.1:5173",
+    "http://localhost:11434",
+    "http://127.0.0.1:11434",
     "https://lang-q.com",
     "https://www.lang-q.com",
-    "https://0c957148575d.ngrok-free.app",
     "https://arunet007.pythonanywhere.com",
     "https://www.arunet007.pythonanywhere.com",
+    "https://b5ad41b44e21.ngrok-free.app"
 ]
 
 CORS_ALLOW_METHODS = [
@@ -95,6 +107,7 @@ CORS_ALLOW_HEADERS = [
     'user-agent',
     'x-csrftoken',
     'x-requested-with',
+    'accountId',
 ]
 
 CORS_ALLOW_CREDENTIALS = True
@@ -105,19 +118,8 @@ CSRF_COOKIE_SAMESITE = 'None'
 SESSION_COOKIE_SAMESITE = 'None'
 
 
-CSRF_TRUSTED_ORIGINS = [
-    "http://localhost:3000",
-    "http://localhost:3001",
-    "http://127.0.0.1:3000",
-    "http://127.0.0.1:3001",
-    "http://localhost:5173",
-    "http://127.0.0.1:5173",
-    "https://lang-q.com",
-    "https://www.lang-q.com",
-    "https://0c957148575d.ngrok-free.app",
-    "https://arunet007.pythonanywhere.com",
-    "https://www.arunet007.pythonanywhere.com",
-]
+CSRF_TRUSTED_ORIGINS = env.list('CSRF_TRUSTED_ORIGINS', default=[])
+
 
 ROOT_URLCONF = 'newsletter_project.urls'
 
@@ -144,10 +146,11 @@ WSGI_APPLICATION = 'newsletter_project.wsgi.application'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+    'default': env.db()
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.sqlite3',
+    #     'NAME': BASE_DIR / 'db.sqlite3',
+    # }
 }
 
 
@@ -192,14 +195,21 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-EMAIL_HOST = "smtp.zoho.in"
-EMAIL_PORT = 587
-# EMAIL_HOST_USER = "arunet007@gmail.com"
-# EMAIL_HOST_USER = "arun@lang-q.com"
-EMAIL_HOST_USER = "team@lang-q.com"
-# EMAIL_HOST_PASSWORD = "mywx xhed stsh dpxx"
-# EMAIL_HOST_PASSWORD = "UbkjeEbcAkRV"
-EMAIL_HOST_PASSWORD = "PHrT2NqBFwy1"
-EMAIL_USE_TLS = True
-DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+# Email Configuration
+EMAIL_BACKEND = env('EMAIL_BACKEND', default='django.core.mail.backends.smtp.EmailBackend')
+EMAIL_HOST = env('EMAIL_HOST', default='smtp.zoho.in')
+EMAIL_PORT = env.int('EMAIL_PORT', default=587)
+EMAIL_HOST_USER = env('EMAIL_HOST_USER', default='')
+EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD', default='')
+EMAIL_USE_TLS = env.bool('EMAIL_USE_TLS', default=True)
+DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL', default=EMAIL_HOST_USER)
+
+MEDIA_URL = "/media/"
+MEDIA_ROOT = BASE_DIR / "media"
+
+# Production Security Settings (only applied when DEBUG=False)
+if not DEBUG:
+    SECURE_SSL_REDIRECT = env.bool('SECURE_SSL_REDIRECT', default=True)
+    SECURE_HSTS_SECONDS = env.int('SECURE_HSTS_SECONDS', default=31536000)
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = env.bool('SECURE_HSTS_INCLUDE_SUBDOMAINS', default=True)
+    SECURE_HSTS_PRELOAD = env.bool('SECURE_HSTS_PRELOAD', default=True)

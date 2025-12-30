@@ -3,4 +3,6 @@
  djangorestframework>=3.14,<4
  # CORS headers support
  django-cors-headers>=4,<5
+python-dotenv>=1.0,<2
+cryptography>=43,<44
 

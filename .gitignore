@@ -23,9 +23,10 @@ db.sqlite3
 .DS_Store
 Thumbs.db
 
-# Env files
+# Env files (keep .env.example for documentation)
 *.env
 .env.*
+!.env.example
 
 # Migrations
 **/migrations/
