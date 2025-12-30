@@ -62,43 +62,11 @@ MIDDLEWARE = [
 ]
 
     
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",
-    "http://localhost:3001",
-    "http://127.0.0.1:3000",
-    "http://127.0.0.1:3001",
-    "http://localhost:5173",
-    "http://127.0.0.1:5173",
-    "http://localhost:11434",
-    "http://127.0.0.1:11434",
-    "https://lang-q.com",
-    "https://www.lang-q.com",
-    "https://arunet007.pythonanywhere.com",
-    "https://www.arunet007.pythonanywhere.com",
-    "https://b5ad41b44e21.ngrok-free.app"
-]
+CORS_ALLOWED_ORIGINS = env.list('CORS_ALLOWED_ORIGINS', default=[])
 
-CORS_ALLOW_METHODS = [
-    'DELETE',
-    'GET',
-    'OPTIONS',
-    'PATCH',
-    'POST',
-    'PUT',
-]
+CORS_ALLOW_METHODS = env.list('CORS_ALLOW_METHODS', default=[])
 
-CORS_ALLOW_HEADERS = [
-    'accept',
-    'accept-encoding',
-    'authorization',
-    'content-type',
-    'dnt',
-    'origin',
-    'user-agent',
-    'x-csrftoken',
-    'x-requested-with',
-    'accountId',
-]
+CORS_ALLOW_HEADERS = env.list('CORS_ALLOW_HEADERS', default=[])
 
 CORS_ALLOW_CREDENTIALS = True
 
