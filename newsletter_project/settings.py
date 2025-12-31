@@ -32,7 +32,7 @@ SECRET_KEY = env("SECRET_KEY", default="unsafe-docker-build-key")
 
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = env('DEBUG')
+DEBUG = env('DEBUG', default=False)
 
 ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=[])
 
