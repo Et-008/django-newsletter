@@ -273,7 +273,7 @@ def create_newsletter(request):
         accountId = request.headers.get("accountId")
         if accountId and title and sections and html_content:
             newsletter = Newsletter.objects.create(title=title, sections=sections, html_content=html_content, sent=False, accountId=accountId, date_generated=datetime.now())
-            return JsonResponse({"Developer": "Arun Et", "newsletter": newsletter.id})
+            return JsonResponse({"Developer": "Arun Et", "newsletter_id": newsletter.id})
         else:
             return JsonResponse({"Developer": "Arun Et", "error": "Account ID, title, sections, and html_content are required"}, status=400)
 
