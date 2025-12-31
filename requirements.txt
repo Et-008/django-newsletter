@@ -26,3 +26,5 @@ playwright>=1.44,<2
 imagekitio
 # Pathlib for path operations
 pathlib
+# Timezone data
+tzdata
