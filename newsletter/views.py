@@ -83,7 +83,17 @@ def html_to_image(request):
         os.makedirs(url_images_dir, exist_ok=True)
         
         with sync_playwright() as playwright:
-            browser = playwright.chromium.launch(headless=True)
+            browser = playwright.chromium.launch(
+                headless=True,
+                args=[
+                    "--no-sandbox",
+                    "--disable-dev-shm-usage",
+                    "--disable-gpu",
+                    "--disable-setuid-sandbox",
+                    "--no-zygote",
+                    "--single-process",
+                ]
+            )
             page = browser.new_page()
             request_data = json.loads(request.body.decode("utf-8"))
             page.goto(request_data.get("url") or request.POST.get("url"))
