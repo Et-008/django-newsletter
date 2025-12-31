@@ -106,7 +106,7 @@ WSGI_APPLICATION = 'newsletter_project.wsgi.application'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
 DATABASES = {
-    'default': env.db()
+    'default': env.db(default='postgresql://mark_exec_1_user:SyVLk46k6NOLNSLrLcY2UNZsGyjVsXMd@dpg-d59nd975r7bs739cg22g-a.oregon-postgres.render.com/mark_exec_1')
     # 'default': {
     #     'ENGINE': 'django.db.backends.sqlite3',
     #     'NAME': BASE_DIR / 'db.sqlite3',
