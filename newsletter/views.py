@@ -47,7 +47,7 @@ def html_to_image(request):
         return JsonResponse({"detail": "url is required"}, status=400)
     if env("DEBUG") == True:
         if UrlData.objects.filter(url=url).exists():
-            print(UrlData.objects.get(url=url), "UrlData.objects.get")
+            # print(UrlData.objects.get(url=url), "UrlData.objects.get")
             url_data = UrlData.objects.get(url=url)
             if url_data.image and os.path.exists(url_data.image.path):
                 return JsonResponse({"image_url": f"http://localhost:8000/api/media/url_images/{cleaned_url}.png"})
@@ -121,8 +121,11 @@ def html_to_image(request):
                 use_unique_file_name=False,
             )
 
-            print(result.url, "result.url")
-            image_url = result.url
+            # print(result.url, "result.url")
+            image_url = None
+
+            if result and result.url:
+                image_url = result.url
         except Exception as save_exc:
             # Ignore db errors, but in production you might want to log this
             return JsonResponse({"detail": f"Failed to save/upload image: {save_exc}"}, status=500)

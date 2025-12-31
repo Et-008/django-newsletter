@@ -109,7 +109,7 @@ def fetch_html_and_convert_to_json(request):
 
         # Clean up the HTML to remove unwanted tags and attributes
         cleaned_up_html = clean_html(soup.prettify(), clean_svg=True, clean_base64=True)
-        print(cleaned_up_html, "cleaned_up_html")
+        # print(cleaned_up_html, "cleaned_up_html")
 
         # Find all img tags and collect their src or srcset
         img_tags = soup.find_all("img")
@@ -122,13 +122,13 @@ def fetch_html_and_convert_to_json(request):
                 srcset = img.get("srcset")
                 if srcset:
                     image_sources.extend([url.split()[0] for url in srcset.split(',')])
-        print("Image sources found:", image_sources)
+        # print("Image sources found:", image_sources)
 
         # Convert the cleaned up HTML to Markdown
         md_content = md(cleaned_up_html, heading_style="ATX")
 
         final_json_output = generate_newsletter_json(md_content, NEWSLETTER_SCHEMA)
-        print(final_json_output, "final_json_output")
+        # print(final_json_output, "final_json_output")
 
         UrlData.objects.update_or_create(
             url=url,
@@ -206,9 +206,9 @@ def generate_newsletter_json(markdown_input, schema):
         },
     )
 
-    print(output, "output")
+    # print(output, "output")
 
-    print(output.text, "output.text")
+    # print(output.text, "output.text")
     
     # 4c. Decode and post-process
     # generated_text = tokenizer.decode(output[0, input_ids.shape[-1]:], skip_special_tokens=True).strip()
@@ -242,7 +242,7 @@ def get_gemini_api(request):
     api_key = os.environ.get('GEMINI_API_KEY')
     if not api_key:
         return JsonResponse({"detail": "GEMINI_API_KEY not set"}, status=500)
-    print(api_key, "api_key")
+    # print(api_key, "api_key")
     client = genai.Client(api_key=api_key)
 
     response = client.models.generate_content(
@@ -296,7 +296,6 @@ def send_newsletter_email(request):
                 return JsonResponse({"Developer": "Arun Et", "message": "Failed to establish connection"}, status=500)
 
             for s in subscribers:
-                print(s['email'], "s.email")
                 send_mail(
                     title,
                     "",  # plain text fallback
