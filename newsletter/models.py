@@ -7,8 +7,8 @@ class Subscriber(models.Model):
     name = models.CharField(max_length=100, blank=True)
     subscribed_on = models.DateTimeField(auto_now_add=True)
     is_active = models.BooleanField(default=True)
-    accountId = models.CharField(max_length=100, blank=False)
-
+    accountIds = models.JSONField(default=list, blank=True)
+    
     def __str__(self):
         return self.email
 

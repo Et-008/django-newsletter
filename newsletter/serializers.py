@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from django.core.exceptions import ValidationError as DjangoValidationError
 from .models import Item, Subscriber, EmailConfig
 from django.contrib.auth.models import User
 from .crypto_utils import encrypt_secret
@@ -72,7 +73,10 @@ class EmailConfigSerializer(serializers.ModelSerializer):
         if password:
             obj.password_encrypted = encrypt_secret(password)
             obj.password_set = True
-        obj.full_clean()
+        try:
+            obj.full_clean()
+        except DjangoValidationError as e:
+            raise serializers.ValidationError(e.message_dict)
         obj.save()
         return obj
 
@@ -83,6 +87,9 @@ class EmailConfigSerializer(serializers.ModelSerializer):
         if password is not None:
             instance.password_encrypted = encrypt_secret(password)
             instance.password_set = True
-        instance.full_clean()
+        try:
+            instance.full_clean()
+        except DjangoValidationError as e:
+            raise serializers.ValidationError(e.message_dict)
         instance.save()
         return instance

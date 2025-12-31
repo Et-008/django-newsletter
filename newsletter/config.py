@@ -6,6 +6,7 @@ from django.views.decorators.http import require_POST, require_GET, require_http
 from django.views.decorators.csrf import csrf_exempt
 from django.utils import timezone
 from django.core.mail.backends.smtp import EmailBackend
+from rest_framework import serializers as drf_serializers
 
 from .models import EmailConfig
 from .serializers import EmailConfigSerializer
@@ -74,7 +75,10 @@ def create_config(request: HttpRequest):
         return JsonResponse({"detail": "Invalid JSON"}, status=400)
     serializer = EmailConfigSerializer(data=payload, context={"request": request})
     if serializer.is_valid():
-        obj = serializer.save()
+        try:
+            obj = serializer.save()
+        except drf_serializers.ValidationError as e:
+            return JsonResponse({"errors": e.detail}, status=400)
         return JsonResponse({"data": EmailConfigSerializer(obj).data}, status=201)
     return JsonResponse({"errors": serializer.errors}, status=400)
 
@@ -107,7 +111,10 @@ def update_config(request: HttpRequest):
     if config:
         serializer = EmailConfigSerializer(config, data=payload, partial=True, context={"request": request})
         if serializer.is_valid():
-            obj = serializer.save()
+            try:
+                obj = serializer.save()
+            except drf_serializers.ValidationError as e:
+                return JsonResponse({"errors": e.detail}, status=400)
             return JsonResponse({"data": EmailConfigSerializer(obj).data}, status=200)
         return JsonResponse({"errors": serializer.errors}, status=400)
     else:
@@ -115,7 +122,10 @@ def update_config(request: HttpRequest):
         payload.setdefault("is_primary", True)
         serializer = EmailConfigSerializer(data=payload, context={"request": request})
         if serializer.is_valid():
-            obj = serializer.save()
+            try:
+                obj = serializer.save()
+            except drf_serializers.ValidationError as e:
+                return JsonResponse({"errors": e.detail}, status=400)
             return JsonResponse({"data": EmailConfigSerializer(obj).data}, status=201)
         return JsonResponse({"errors": serializer.errors}, status=400)
 
@@ -134,7 +144,10 @@ def update_config_by_id(request: HttpRequest, id: int):
         return JsonResponse({"detail": "Config not found"}, status=404)
     serializer = EmailConfigSerializer(config, data=payload, partial=True, context={"request": request})
     if serializer.is_valid():
-        obj = serializer.save()
+        try:
+            obj = serializer.save()
+        except drf_serializers.ValidationError as e:
+            return JsonResponse({"errors": e.detail}, status=400)
         return JsonResponse({"data": EmailConfigSerializer(obj).data}, status=200)
     return JsonResponse({"errors": serializer.errors}, status=400)
 

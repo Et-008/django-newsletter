@@ -149,7 +149,7 @@ def users_list(request: HttpRequest):
     # if not request.user.is_authenticated or not request.user.is_staff:
     #     return JsonResponse({"detail": "Forbidden"}, status=403)
     if accountId:
-        users_qs = Subscriber.objects.filter(accountId=accountId).order_by("id")
+        users_qs = Subscriber.objects.filter(accountIds__icontains=accountId).order_by("id")
     else:
         users_qs = Subscriber.objects.all().order_by("id")
     data = SubscriberSerializer(users_qs, many=True).data
@@ -173,7 +173,19 @@ def subscribe(request):
     if not email:
         return JsonResponse({"detail": "email is required"}, status=400)
 
-    Subscriber.objects.get_or_create(accountId=accountId, email=email, defaults={"name": name})
+    # Try to get an existing subscriber by email
+    subscriber = Subscriber.objects.filter(email=email).first()
+    if not subscriber:
+        # Create new subscriber
+        subscriber = Subscriber.objects.create(email=email, name=name, accountIds=[accountId])
+    else:
+        account_ids = subscriber.accountIds or []
+        if accountId and accountId in account_ids:
+            return JsonResponse({"Developer": "Arun Et", "message": "Duplicate entry", "data": {"email": email, "name": name}}, status=409)
+        else:
+            account_ids.append(accountId)
+            subscriber.accountIds = account_ids
+            subscriber.save()
     return JsonResponse({"Developer": "Arun Et", "message": "Subscriber created successfully", "data": {"email": email, "name": name}}, status=201)
 
 
