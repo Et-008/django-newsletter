@@ -14,6 +14,6 @@ ENV DATABASE_URL=postgresql://mark_exec_1_user:SyVLk46k6NOLNSLrLcY2UNZsGyjVsXMd@
 RUN python manage.py collectstatic --noinput || true
 
 
-CMD ["gunicorn", "newsletter_project.wsgi:application", "--bind", "0.0.0.0:10000", "--workers", "2", "--timeout", "180"]
+# CMD ["gunicorn", "newsletter_project.wsgi:application", "--bind", "0.0.0.0:10000", "--workers", "2", "--timeout", "180"]
 
-# CMD gunicorn newsletter_project.wsgi:application --bind 0.0.0.0:10000 --workers 2 --timeout 180
+CMD gunicorn newsletter_project.wsgi:application --bind 0.0.0.0:10000 --workers 2 --timeout 180
