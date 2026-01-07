@@ -64,9 +64,27 @@ MIDDLEWARE = [
     
 CORS_ALLOWED_ORIGINS = env.list('CORS_ALLOWED_ORIGINS', default=[])
 
-CORS_ALLOW_METHODS = env.list('CORS_ALLOW_METHODS', default=[])
+CORS_ALLOW_METHODS = env.list('CORS_ALLOW_METHODS', default=[
+    "DELETE",
+    "GET",
+    "OPTIONS",
+    "PATCH",
+    "POST",
+    "PUT",
+])
 
-CORS_ALLOW_HEADERS = env.list('CORS_ALLOW_HEADERS', default=[])
+CORS_ALLOW_HEADERS = env.list('CORS_ALLOW_HEADERS', default=[
+    "accept",
+    "accept-encoding",
+    "authorization",
+    "content-type",
+    "dnt",
+    "origin",
+    "user-agent",
+    "x-csrftoken",
+    "x-requested-with",
+    "accountid",  # Custom header for accountId
+])
 
 CORS_ALLOW_CREDENTIALS = True
 

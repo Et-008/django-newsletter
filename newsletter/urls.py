@@ -1,8 +1,9 @@
 from django.urls import path
-
+from . import org as org_views
 from newsletter import campaigns
 from . import views
 from . import auth as auth_views
+from . import non_auth as non_auth_views
 from . import newsletter_apis
 from . import assets
 from . import config as config_views
@@ -11,9 +12,8 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path("get-csrf-token/", views.get_csrf_token, name="get_csrf_token"),
-    path("subscribe/", auth_views.subscribe, name="subscribe"),
-    path("update-subscriber/", auth_views.update_subscriber, name="update_subscriber"),
-    path("unsubscribe/", auth_views.unsubscribe, name="unsubscribe"),
+
+    # Campaigns endpoints
     path("send/<int:campaign_id>/", views.send_newsletter, name="send_newsletter"),
     path("html-to-image/", views.html_to_image, name="html_to_image"),
     path("fetch-html-and-convert-to-json/", newsletter_apis.fetch_html_and_convert_to_json, name="fetch_html_and_convert_to_json"),
@@ -25,8 +25,10 @@ urlpatterns = [
     path("newsletter/delete/", campaigns.delete_newsletter, name="delete_newsletter"),
     path("newsletter/send/", campaigns.send_newsletter, name="send_newsletter"),
     path("newsletter/send-email/", newsletter_apis.send_newsletter_email, name="send_newsletter_email"),
+
     # Image upload endpoint
     path("assets/upload-image/", assets.ImageUploadView.as_view(), name="upload_image"),
+
     # Auth endpoints
     path("auth/csrf/", auth_views.csrf_token, name="auth_csrf"),
     path("auth/signup/", auth_views.signup, name="auth_signup"),
@@ -36,6 +38,21 @@ urlpatterns = [
     path("auth/me/update/", auth_views.update_me, name="auth_update_me"),
     path("auth/change-password/", auth_views.change_password, name="auth_change_password"),
     path("auth/users/", auth_views.users_list, name="auth_users_list"),
+    path("auth/account-id/", auth_views.get_account_id, name="auth_get_account_id"),
+    path("auth/unsubscribe-token/", auth_views.get_unsubscribe_token, name="auth_get_unsubscribe_token"),
+
+    # Org endpoints
+    path("org/create/", org_views.create_org, name="create_org"),
+    path("org/update/", org_views.update_org, name="update_org"),
+    path("org/delete/", org_views.delete_org, name="delete_org"),
+    path("org/list/", org_views.list_orgs, name="list_orgs"),
+    path("org/get/", org_views.get_org, name="get_org"),
+
+    # Auth - Subscriber endpoints
+    path("subscribe/", auth_views.subscribe, name="subscribe"),
+    path("update-subscriber/", auth_views.update_subscriber, name="update_subscriber"),
+    path("unsubscribe/", auth_views.unsubscribe, name="unsubscribe"),
+
     # Configuration endpoints
     path("config/get/", config_views.get_config, name="get_config"),
     path("config/update/", config_views.update_config, name="update_config"),
@@ -44,6 +61,10 @@ urlpatterns = [
     path("config/<int:id>/", config_views.update_config_by_id, name="update_config_by_id"),
     path("config/<int:id>/set-primary/", config_views.set_primary, name="set_primary_config"),
     path("config/<int:id>/verify/", config_views.verify_config, name="verify_config"),
+
+    # Public endpoints (no login required)
+    path("public/subscribe/", non_auth_views.subscribe, name="public_subscribe"),
+    path("public/unsubscribe/", non_auth_views.unsubscribe, name="public_unsubscribe"),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

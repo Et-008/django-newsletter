@@ -1,6 +1,114 @@
 from django.db import models
 from django.conf import settings
 from django.core.exceptions import ValidationError
+from django.utils.text import slugify
+
+
+# ============================================================================
+# Organisation Models
+# ============================================================================
+
+class Organisation(models.Model):
+    """
+    Represents an organisation/company that owns newsletters.
+    Users can belong to multiple organisations with different roles.
+    """
+    name = models.CharField(max_length=200)
+    slug = models.SlugField(max_length=100, unique=True, blank=True)
+    
+    # Many-to-many through OrganisationMember
+    members = models.ManyToManyField(
+        settings.AUTH_USER_MODEL,
+        through="OrganisationMember",
+        through_fields=("organisation", "user"),  # Specify which FKs to use
+        related_name="organisations"
+    )
+    
+    # Organisation details
+    description = models.TextField(blank=True)
+    website = models.URLField(blank=True)
+    logo = models.ImageField(upload_to="org_logos/", blank=True, null=True)
+    
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = "Organisation"
+        verbose_name_plural = "Organisations"
+        indexes = [
+            models.Index(fields=["slug"]),
+            models.Index(fields=["is_active"]),
+        ]
+
+    def save(self, *args, **kwargs):
+        # Auto-generate slug from name if not provided
+        if not self.slug:
+            base_slug = slugify(self.name)
+            slug = base_slug
+            counter = 1
+            while Organisation.objects.filter(slug=slug).exclude(pk=self.pk).exists():
+                slug = f"{base_slug}-{counter}"
+                counter += 1
+            self.slug = slug
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return self.name
+
+
+class OrganisationMember(models.Model):
+    """
+    Junction table linking users to organisations with roles.
+    A user can be admin of one org and member of another.
+    """
+    ROLE_ADMIN = "admin"
+    ROLE_EDITOR = "editor"
+    ROLE_VIEWER = "viewer"
+    ROLE_CHOICES = [
+        (ROLE_ADMIN, "Admin"),
+        (ROLE_EDITOR, "Editor"),
+        (ROLE_VIEWER, "Viewer"),
+    ]
+    
+    organisation = models.ForeignKey(
+        Organisation,
+        on_delete=models.CASCADE,
+        related_name="memberships"
+    )
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="org_memberships"
+    )
+    role = models.CharField(max_length=20, choices=ROLE_CHOICES, default=ROLE_VIEWER)
+    
+    # When they joined this org
+    joined_at = models.DateTimeField(auto_now_add=True)
+    
+    # Who invited them (optional)
+    invited_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="invitations_sent"
+    )
+
+    class Meta:
+        unique_together = ["organisation", "user"]
+        indexes = [
+            models.Index(fields=["user", "role"]),
+            models.Index(fields=["organisation", "role"]),
+        ]
+
+    def __str__(self):
+        return f"{self.user.email} - {self.organisation.name} ({self.role})"
+
+
+# ============================================================================
+# Subscriber & Newsletter Models
+# ============================================================================
 
 class Subscriber(models.Model):
     email = models.EmailField(unique=True)
@@ -8,6 +116,7 @@ class Subscriber(models.Model):
     subscribed_on = models.DateTimeField(auto_now_add=True)
     is_active = models.BooleanField(default=True)
     accountIds = models.JSONField(default=list, blank=True)
+    organisationIds = models.JSONField(default=list, blank=True)
     
     def __str__(self):
         return self.email
@@ -19,12 +128,14 @@ class Campaign(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     sent = models.BooleanField(default=False)
     accountId = models.CharField(max_length=100, blank=False)
+    organisationId = models.CharField(max_length=100, blank=False, default="1")
 
     def __str__(self):
         return self.subject
 
 class Newsletter(models.Model):
     accountId = models.CharField(max_length=100, blank=False)
+    organisationId = models.CharField(max_length=100, blank=False, default="1")
     title = models.CharField(max_length=200)
     sections = models.JSONField(default=list, blank=True)
     html_content = models.TextField(blank=True, null=True)
@@ -50,12 +161,14 @@ class UrlData(models.Model):
     image = models.ImageField(upload_to="url_images/", blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     accountId = models.CharField(max_length=100, blank=False)
+    organisationId = models.CharField(max_length=100, blank=False, default="1")
 
     def __str__(self):
         return self.url
 
 class UploadedImage(models.Model):
     accountId = models.CharField(max_length=100, blank=False)
+    organisationId = models.CharField(max_length=100, blank=False, default="1")
     image = models.ImageField(upload_to="uploaded_images/")
     created_at = models.DateTimeField(auto_now_add=True)
 
